@@ -9,8 +9,9 @@
 
 ## TABLE OF CONTENTS 
 
-*Click to jump to matching Markdown Header.
+*Click to jump to matching Markdown Header.*<br><br>
 
+<font size=3rem>
     
 - **[Introduction](#INTRODUCTION)<br>**
 - **[OBTAIN](#OBTAIN)**<br>
@@ -19,7 +20,7 @@
 - **[MODEL](#MODEL)**<br>
 - **[iNTERPRET](#iNTERPRET)**<br>
 - **[Conclusions/Recommendations](#CONCLUSIONS-&-RECOMMENDATIONS)<br>**
-
+</font>
 ___
 
 # INTRODUCTION
@@ -657,6 +658,8 @@ df.head()
 
 
 
+<table border="1" class="dataframe">
+  <thead>
     <tr style="text-align: right;">
       <th></th>
       <th>RegionName</th>
@@ -2200,7 +2203,6 @@ df1
 
 
 
-
 > - **There's two cities in Ada County other than Boise proper- Eagle and Garden City. Let's include them to increase the number of zipcodes in our analysis and get a better sense of median home prices in the entire county.**
 
 
@@ -2213,7 +2215,8 @@ df1.head()
 
 
 
-
+<table border="1" class="dataframe">
+  <thead>
     <tr style="text-align: right;">
       <th></th>
       <th>RegionName</th>
@@ -2727,7 +2730,6 @@ df1.head()
 
 
 
-
 ```python
 #DROP UNNECESSARY COLUMNS
 df1.drop(['State', 'CountyName', 'City'], axis=1, inplace=True)
@@ -2749,6 +2751,7 @@ df1.head()
 
 
 
+<table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
       <th></th>
@@ -2790,7 +2793,6 @@ df1.head()
     </tr>
   </tbody>
 </table>
-</div>
 
 
 
@@ -2812,9 +2814,7 @@ df1.head()
 
 
 
-
-
-
+<table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
       <th></th>
@@ -3053,9 +3053,8 @@ df2.head()
 ```
 
 
-
-
-
+<table border="1" class="dataframe">
+  <thead>
     <tr style="text-align: right;">
       <th></th>
       <th>83709</th>
@@ -3161,7 +3160,6 @@ df2.head()
 
 
 
-
 > **Let's only use housing data starting from 2013. Inflation and other historical market events (i.e. the crash in 2008) since the beginning of the data set could skew our models and our forecasts.**
 
 > **Reaching back at least 5 years into the data (2013) ensures that we're able to make forecasts at least another 5 years into the future (2023)- which is as far as we want to go anyway.**
@@ -3178,7 +3176,8 @@ df2.head()
 
 
 
-
+<table border="1" class="dataframe">
+  <thead>
     <tr style="text-align: right;">
       <th></th>
       <th>83709</th>
@@ -3281,7 +3280,6 @@ df2.head()
     </tr>
   </tbody>
 </table>
-
 
 
 
