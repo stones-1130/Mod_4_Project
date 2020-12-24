@@ -3,11 +3,14 @@
 
 * Student name: **Andrew Hotchkiss**
 * Student pace: **Part time**
-* Scheduled project review date/time: 
+* Scheduled project review date/time: 12/23 @ 8pm
 * Instructor name: **James Irving**
 * Blog post URL: https://stones-1130.github.io/
 
 ## TABLE OF CONTENTS 
+
+*Click to jump to matching Markdown Header.
+
     
 - **[Introduction](#INTRODUCTION)<br>**
 - **[OBTAIN](#OBTAIN)**<br>
@@ -17,6 +20,7 @@
 - **[iNTERPRET](#iNTERPRET)**<br>
 - **[Conclusions/Recommendations](#CONCLUSIONS-&-RECOMMENDATIONS)<br>**
 
+___
 
 # INTRODUCTION
 
@@ -43,7 +47,7 @@ Home prices expected to rise 10% in 2021
 
 
 **Criteria for “Best” Zipcode to invest in: 
-Lowest risk based on 5-year forecast for median home prices**
+Lowest risk based on 2-year forecast for median home prices**
 
 
 # OBTAIN
@@ -74,6 +78,8 @@ plt.style.use('seaborn-poster')
 df = pd.read_csv('zillow_data.csv')
 df.head()
 ```
+
+
 
 
 
@@ -588,7 +594,7 @@ df.head()
   </tbody>
 </table>
 <p>5 rows × 272 columns</p>
-</div>
+
 
 
 
@@ -650,10 +656,7 @@ df.head()
 
 
 
-<div>
 
-<table border="1" class="dataframe">
-  <thead>
     <tr style="text-align: right;">
       <th></th>
       <th>RegionName</th>
@@ -1163,7 +1166,7 @@ df.head()
   </tbody>
 </table>
 <p>5 rows × 269 columns</p>
-</div>
+
 
 
 
@@ -1174,6 +1177,7 @@ df1 = df.loc[df['CountyName'] == 'Ada']
 
 df1
 ```
+
 
 
 
@@ -2193,7 +2197,7 @@ df1
   </tbody>
 </table>
 <p>11 rows × 269 columns</p>
-</div>
+
 
 
 
@@ -2208,8 +2212,8 @@ df1.head()
 
 
 
-<table border="1" class="dataframe">
-  <thead>
+
+
     <tr style="text-align: right;">
       <th></th>
       <th>RegionName</th>
@@ -2719,7 +2723,7 @@ df1.head()
   </tbody>
 </table>
 <p>5 rows × 269 columns</p>
-</div>
+
 
 
 
@@ -2745,7 +2749,6 @@ df1.head()
 
 
 
-<table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
       <th></th>
@@ -2811,7 +2814,7 @@ df1.head()
 
 
 
-<table border="1" class="dataframe">
+
   <thead>
     <tr style="text-align: right;">
       <th></th>
@@ -2852,7 +2855,6 @@ df1.head()
     </tr>
   </tbody>
 </table>
-</div>
 
 
 
@@ -3051,8 +3053,9 @@ df2.head()
 ```
 
 
-<table border="1" class="dataframe">
-  <thead>
+
+
+
     <tr style="text-align: right;">
       <th></th>
       <th>83709</th>
@@ -3155,7 +3158,7 @@ df2.head()
     </tr>
   </tbody>
 </table>
-</div>
+
 
 
 
@@ -3174,8 +3177,8 @@ df2.head()
 
 
 
-<table border="1" class="dataframe">
-  <thead>
+
+
     <tr style="text-align: right;">
       <th></th>
       <th>83709</th>
@@ -3278,7 +3281,7 @@ df2.head()
     </tr>
   </tbody>
 </table>
-</div>
+
 
 
 
@@ -3336,9 +3339,10 @@ ts_result.plot();
 
 ```python
 # TRAIN TEST SPLIT INDEX
+#CODE ADAPTED FROM JAMES' LECTURE NOTES
+
 train_size = 0.8
 split_idx = round(len(ts) * train_size)
-split_idx
 
 # SPLIT
 train = ts.iloc[:split_idx]
@@ -3399,10 +3403,10 @@ from sklearn import metrics
 
 
 ```python
-#BUILD A FUNCTION TO FORCAST PRICES AND STORE THEM IN A DATAFRAME
 #CODE ADAPTED FROM JAMES' LECTURE NOTES
 
 def forecast_to_df(forecast, zipcode):
+    '''Function to forecast prices and store them in a dataframe'''
     
     test_pred = forecast.conf_int()
     test_pred[zipcode] = forecast.predicted_mean
@@ -3411,21 +3415,20 @@ def forecast_to_df(forecast, zipcode):
 
 ```
 
-> **Now let's put all of our tools together and use dynamic forecasting to predict the median home prices for all zipcodes in Ada County from May 2018 - April 2023.**
+> **Now let's put all of our tools together and use dynamic forecasting to predict the median home prices for all zipcodes in Ada County from May 2018 - April 2020.**
 
 > **Using these predictions, we'll be able to determine which zipcodes have the lowest risk and are therefore the best investment.**
 
 
 ```python
-#USE DYNAMIC FORCASTING TO PREDICT HOUSE PRICES 5 YEARS INTO THE FUTURE
+#USE DYNAMIC FORCASTING TO PREDICT HOUSE PRICES 2 YEARS INTO THE FUTURE
 #CODE ADAPTED FROM JAMES' LECTURE NOTES
 
 #CREATE AN EMPTY DICTIONARY TO STORE THE MODELING RESULTS
 RESULTS = {}
 
 for zipcode in zipcode_list:
-    '''Forecast mean home values for each zipcode in Ada County, Idaho
-    from May 2017 - Decemeber 2022'''
+    '''Forecast mean home values for each zipcode in Ada County, Idaho'''
     
     print("ZIPCODE: ", zipcode)
 
@@ -3436,7 +3439,7 @@ for zipcode in zipcode_list:
     ts = df2[zipcode].copy()
 
     # TRAIN TEST SPLIT INDEX
-    train_size = 0.75
+    train_size = 0.85
     split_idx = round(len(ts) * train_size)
     split_idx
 
@@ -3448,13 +3451,12 @@ for zipcode in zipcode_list:
     gs_model = auto_arima(train, start_p=0, start_q=0)
     
     #MODEL USING SARIMAX
-    best_model = SARIMAX(train, order=gs_model.order, 
+    best_model = SARIMAX(ts, order=gs_model.order, 
                          seasonal_order=gs_model.seasonal_order).fit()
 
-    # GET PREDICTIONS FOR 5 YEARS IN ADVANCE (2017-2022)
-    ## DATA IS SAMPLED MONTHY FROM THE TRAIN/TEST SPLIT (ROUGHLY AROUND 2017)
-    ### THEREFORE TO GET TO 2023 FROM 2017 IS 12x6 = 72 MONTHS(steps)
-    pred = best_model.get_forecast(steps=72)
+    # GET PREDICTIONS FOR 2 YEARS IN ADVANCE (2018-2020)
+    ##DATA IS SAMPLED MONTHLY - 12x2 = 24 MONTHS (steps)
+    pred = best_model.get_forecast(steps=24)
     pred_df = forecast_to_df(pred, zipcode)
 
   
@@ -3484,22 +3486,22 @@ for zipcode in zipcode_list:
 <table class="simpletable">
 <caption>SARIMAX Results</caption>
 <tr>
-  <th>Dep. Variable:</th>         <td>83709</td>      <th>  No. Observations:  </th>    <td>48</td>   
+  <th>Dep. Variable:</th>         <td>83709</td>      <th>  No. Observations:  </th>    <td>64</td>   
 </tr>
 <tr>
-  <th>Model:</th>           <td>SARIMAX(1, 1, 1)</td> <th>  Log Likelihood     </th> <td>-385.738</td>
+  <th>Model:</th>           <td>SARIMAX(1, 1, 1)</td> <th>  Log Likelihood     </th> <td>-583.358</td>
 </tr>
 <tr>
-  <th>Date:</th>            <td>Sun, 20 Dec 2020</td> <th>  AIC                </th>  <td>777.477</td>
+  <th>Date:</th>            <td>Wed, 23 Dec 2020</td> <th>  AIC                </th> <td>1172.716</td>
 </tr>
 <tr>
-  <th>Time:</th>                <td>23:56:14</td>     <th>  BIC                </th>  <td>783.027</td>
+  <th>Time:</th>                <td>21:06:19</td>     <th>  BIC                </th> <td>1179.146</td>
 </tr>
 <tr>
-  <th>Sample:</th>             <td>01-01-2013</td>    <th>  HQIC               </th>  <td>779.566</td>
+  <th>Sample:</th>             <td>01-01-2013</td>    <th>  HQIC               </th> <td>1175.245</td>
 </tr>
 <tr>
-  <th></th>                   <td>- 12-01-2016</td>   <th>                     </th>     <td> </td>   
+  <th></th>                   <td>- 04-01-2018</td>   <th>                     </th>     <td> </td>   
 </tr>
 <tr>
   <th>Covariance Type:</th>        <td>opg</td>       <th>                     </th>     <td> </td>   
@@ -3510,29 +3512,29 @@ for zipcode in zipcode_list:
      <td></td>       <th>coef</th>     <th>std err</th>      <th>z</th>      <th>P>|z|</th>  <th>[0.025</th>    <th>0.975]</th>  
 </tr>
 <tr>
-  <th>ar.L1</th>  <td>    0.9842</td> <td>    0.009</td> <td>  107.570</td> <td> 0.000</td> <td>    0.966</td> <td>    1.002</td>
+  <th>ar.L1</th>  <td>   -1.0000</td> <td>    0.038</td> <td>  -26.018</td> <td> 0.000</td> <td>   -1.075</td> <td>   -0.925</td>
 </tr>
 <tr>
-  <th>ma.L1</th>  <td>   -0.9666</td> <td>    0.013</td> <td>  -71.804</td> <td> 0.000</td> <td>   -0.993</td> <td>   -0.940</td>
+  <th>ma.L1</th>  <td>    1.0000</td> <td>    0.140</td> <td>    7.157</td> <td> 0.000</td> <td>    0.726</td> <td>    1.274</td>
 </tr>
 <tr>
-  <th>sigma2</th> <td> 7.852e+05</td> <td> 1.12e-09</td> <td> 7.03e+14</td> <td> 0.000</td> <td> 7.85e+05</td> <td> 7.85e+05</td>
+  <th>sigma2</th> <td> 6.368e+06</td> <td> 3.25e-08</td> <td> 1.96e+14</td> <td> 0.000</td> <td> 6.37e+06</td> <td> 6.37e+06</td>
 </tr>
 </table>
 <table class="simpletable">
 <tr>
-  <th>Ljung-Box (L1) (Q):</th>     <td>32.09</td> <th>  Jarque-Bera (JB):  </th> <td>2.06</td> 
+  <th>Ljung-Box (L1) (Q):</th>     <td>35.58</td> <th>  Jarque-Bera (JB):  </th> <td>134.08</td>
 </tr>
 <tr>
-  <th>Prob(Q):</th>                <td>0.00</td>  <th>  Prob(JB):          </th> <td>0.36</td> 
+  <th>Prob(Q):</th>                <td>0.00</td>  <th>  Prob(JB):          </th>  <td>0.00</td> 
 </tr>
 <tr>
-  <th>Heteroskedasticity (H):</th> <td>0.34</td>  <th>  Skew:              </th> <td>-0.51</td>
+  <th>Heteroskedasticity (H):</th> <td>3.95</td>  <th>  Skew:              </th>  <td>1.48</td> 
 </tr>
 <tr>
-  <th>Prob(H) (two-sided):</th>    <td>0.04</td>  <th>  Kurtosis:          </th> <td>3.05</td> 
+  <th>Prob(H) (two-sided):</th>    <td>0.00</td>  <th>  Kurtosis:          </th>  <td>9.51</td> 
 </tr>
-</table><br/><br/>Warnings:<br/>[1] Covariance matrix calculated using the outer product of gradients (complex-step).<br/>[2] Covariance matrix is singular or near-singular, with condition number 9.52e+29. Standard errors may be unstable.
+</table><br/><br/>Warnings:<br/>[1] Covariance matrix calculated using the outer product of gradients (complex-step).<br/>[2] Covariance matrix is singular or near-singular, with condition number 1.43e+29. Standard errors may be unstable.
 
 
 
@@ -3548,22 +3550,22 @@ for zipcode in zipcode_list:
 <table class="simpletable">
 <caption>SARIMAX Results</caption>
 <tr>
-  <th>Dep. Variable:</th>         <td>83704</td>      <th>  No. Observations:  </th>    <td>48</td>   
+  <th>Dep. Variable:</th>         <td>83704</td>      <th>  No. Observations:  </th>    <td>64</td>   
 </tr>
 <tr>
-  <th>Model:</th>           <td>SARIMAX(0, 1, 0)</td> <th>  Log Likelihood     </th> <td>-407.046</td>
+  <th>Model:</th>           <td>SARIMAX(0, 1, 0)</td> <th>  Log Likelihood     </th> <td>-556.400</td>
 </tr>
 <tr>
-  <th>Date:</th>            <td>Sun, 20 Dec 2020</td> <th>  AIC                </th>  <td>816.091</td>
+  <th>Date:</th>            <td>Wed, 23 Dec 2020</td> <th>  AIC                </th> <td>1114.800</td>
 </tr>
 <tr>
-  <th>Time:</th>                <td>23:56:14</td>     <th>  BIC                </th>  <td>817.942</td>
+  <th>Time:</th>                <td>21:06:20</td>     <th>  BIC                </th> <td>1116.943</td>
 </tr>
 <tr>
-  <th>Sample:</th>             <td>01-01-2013</td>    <th>  HQIC               </th>  <td>816.788</td>
+  <th>Sample:</th>             <td>01-01-2013</td>    <th>  HQIC               </th> <td>1115.643</td>
 </tr>
 <tr>
-  <th></th>                   <td>- 12-01-2016</td>   <th>                     </th>     <td> </td>   
+  <th></th>                   <td>- 04-01-2018</td>   <th>                     </th>     <td> </td>   
 </tr>
 <tr>
   <th>Covariance Type:</th>        <td>opg</td>       <th>                     </th>     <td> </td>   
@@ -3574,21 +3576,21 @@ for zipcode in zipcode_list:
      <td></td>       <th>coef</th>     <th>std err</th>      <th>z</th>      <th>P>|z|</th>  <th>[0.025</th>    <th>0.975]</th>  
 </tr>
 <tr>
-  <th>sigma2</th> <td> 1.923e+06</td> <td> 5.21e+05</td> <td>    3.692</td> <td> 0.000</td> <td> 9.02e+05</td> <td> 2.94e+06</td>
+  <th>sigma2</th> <td> 2.703e+06</td> <td>  5.2e+05</td> <td>    5.193</td> <td> 0.000</td> <td> 1.68e+06</td> <td> 3.72e+06</td>
 </tr>
 </table>
 <table class="simpletable">
 <tr>
-  <th>Ljung-Box (L1) (Q):</th>     <td>30.62</td> <th>  Jarque-Bera (JB):  </th> <td>2.43</td>
+  <th>Ljung-Box (L1) (Q):</th>     <td>22.25</td> <th>  Jarque-Bera (JB):  </th> <td>18.58</td>
 </tr>
 <tr>
-  <th>Prob(Q):</th>                <td>0.00</td>  <th>  Prob(JB):          </th> <td>0.30</td>
+  <th>Prob(Q):</th>                <td>0.00</td>  <th>  Prob(JB):          </th> <td>0.00</td> 
 </tr>
 <tr>
-  <th>Heteroskedasticity (H):</th> <td>1.08</td>  <th>  Skew:              </th> <td>0.44</td>
+  <th>Heteroskedasticity (H):</th> <td>2.85</td>  <th>  Skew:              </th> <td>-0.04</td>
 </tr>
 <tr>
-  <th>Prob(H) (two-sided):</th>    <td>0.88</td>  <th>  Kurtosis:          </th> <td>2.31</td>
+  <th>Prob(H) (two-sided):</th>    <td>0.02</td>  <th>  Kurtosis:          </th> <td>5.66</td> 
 </tr>
 </table><br/><br/>Warnings:<br/>[1] Covariance matrix calculated using the outer product of gradients (complex-step).
 
@@ -3606,22 +3608,22 @@ for zipcode in zipcode_list:
 <table class="simpletable">
 <caption>SARIMAX Results</caption>
 <tr>
-  <th>Dep. Variable:</th>         <td>83706</td>      <th>  No. Observations:  </th>    <td>48</td>   
+  <th>Dep. Variable:</th>         <td>83706</td>      <th>  No. Observations:  </th>    <td>64</td>   
 </tr>
 <tr>
-  <th>Model:</th>           <td>SARIMAX(5, 1, 2)</td> <th>  Log Likelihood     </th> <td>-393.664</td>
+  <th>Model:</th>           <td>SARIMAX(5, 1, 1)</td> <th>  Log Likelihood     </th> <td>-620.776</td>
 </tr>
 <tr>
-  <th>Date:</th>            <td>Sun, 20 Dec 2020</td> <th>  AIC                </th>  <td>803.329</td>
+  <th>Date:</th>            <td>Wed, 23 Dec 2020</td> <th>  AIC                </th> <td>1255.551</td>
 </tr>
 <tr>
-  <th>Time:</th>                <td>23:56:17</td>     <th>  BIC                </th>  <td>818.130</td>
+  <th>Time:</th>                <td>21:06:24</td>     <th>  BIC                </th> <td>1270.553</td>
 </tr>
 <tr>
-  <th>Sample:</th>             <td>01-01-2013</td>    <th>  HQIC               </th>  <td>808.898</td>
+  <th>Sample:</th>             <td>01-01-2013</td>    <th>  HQIC               </th> <td>1261.452</td>
 </tr>
 <tr>
-  <th></th>                   <td>- 12-01-2016</td>   <th>                     </th>     <td> </td>   
+  <th></th>                   <td>- 04-01-2018</td>   <th>                     </th>     <td> </td>   
 </tr>
 <tr>
   <th>Covariance Type:</th>        <td>opg</td>       <th>                     </th>     <td> </td>   
@@ -3632,44 +3634,41 @@ for zipcode in zipcode_list:
      <td></td>       <th>coef</th>     <th>std err</th>      <th>z</th>      <th>P>|z|</th>  <th>[0.025</th>    <th>0.975]</th>  
 </tr>
 <tr>
-  <th>ar.L1</th>  <td>    0.0050</td> <td>    0.031</td> <td>    0.160</td> <td> 0.873</td> <td>   -0.056</td> <td>    0.066</td>
+  <th>ar.L1</th>  <td>    0.9702</td> <td>    0.015</td> <td>   65.597</td> <td> 0.000</td> <td>    0.941</td> <td>    0.999</td>
 </tr>
 <tr>
-  <th>ar.L2</th>  <td>    1.0217</td> <td>    0.018</td> <td>   57.538</td> <td> 0.000</td> <td>    0.987</td> <td>    1.057</td>
+  <th>ar.L2</th>  <td>    0.0156</td> <td>    0.009</td> <td>    1.834</td> <td> 0.067</td> <td>   -0.001</td> <td>    0.032</td>
 </tr>
 <tr>
-  <th>ar.L3</th>  <td>    0.0247</td> <td>    0.139</td> <td>    0.177</td> <td> 0.859</td> <td>   -0.248</td> <td>    0.297</td>
+  <th>ar.L3</th>  <td>    0.0160</td> <td>    0.010</td> <td>    1.565</td> <td> 0.118</td> <td>   -0.004</td> <td>    0.036</td>
 </tr>
 <tr>
-  <th>ar.L4</th>  <td>   -0.0229</td> <td>    0.028</td> <td>   -0.831</td> <td> 0.406</td> <td>   -0.077</td> <td>    0.031</td>
+  <th>ar.L4</th>  <td>    0.0202</td> <td>    0.010</td> <td>    1.979</td> <td> 0.048</td> <td>    0.000</td> <td>    0.040</td>
 </tr>
 <tr>
-  <th>ar.L5</th>  <td>   -0.0284</td> <td>    0.129</td> <td>   -0.220</td> <td> 0.826</td> <td>   -0.281</td> <td>    0.224</td>
+  <th>ar.L5</th>  <td>   -0.0592</td> <td>    0.007</td> <td>   -8.312</td> <td> 0.000</td> <td>   -0.073</td> <td>   -0.045</td>
 </tr>
 <tr>
-  <th>ma.L1</th>  <td>   -0.0008</td> <td>    0.164</td> <td>   -0.005</td> <td> 0.996</td> <td>   -0.322</td> <td>    0.320</td>
+  <th>ma.L1</th>  <td>   -0.9356</td> <td>    0.014</td> <td>  -66.061</td> <td> 0.000</td> <td>   -0.963</td> <td>   -0.908</td>
 </tr>
 <tr>
-  <th>ma.L2</th>  <td>   -0.9987</td> <td>    0.163</td> <td>   -6.126</td> <td> 0.000</td> <td>   -1.318</td> <td>   -0.679</td>
-</tr>
-<tr>
-  <th>sigma2</th> <td> 6.789e+05</td> <td>    5e-07</td> <td> 1.36e+12</td> <td> 0.000</td> <td> 6.79e+05</td> <td> 6.79e+05</td>
+  <th>sigma2</th> <td> 5.976e+05</td> <td> 1.02e-08</td> <td> 5.84e+13</td> <td> 0.000</td> <td> 5.98e+05</td> <td> 5.98e+05</td>
 </tr>
 </table>
 <table class="simpletable">
 <tr>
-  <th>Ljung-Box (L1) (Q):</th>     <td>28.78</td> <th>  Jarque-Bera (JB):  </th> <td>4.37</td>
+  <th>Ljung-Box (L1) (Q):</th>     <td>31.05</td> <th>  Jarque-Bera (JB):  </th> <td>28.17</td>
 </tr>
 <tr>
-  <th>Prob(Q):</th>                <td>0.00</td>  <th>  Prob(JB):          </th> <td>0.11</td>
+  <th>Prob(Q):</th>                <td>0.00</td>  <th>  Prob(JB):          </th> <td>0.00</td> 
 </tr>
 <tr>
-  <th>Heteroskedasticity (H):</th> <td>0.24</td>  <th>  Skew:              </th> <td>0.62</td>
+  <th>Heteroskedasticity (H):</th> <td>3.71</td>  <th>  Skew:              </th> <td>0.95</td> 
 </tr>
 <tr>
-  <th>Prob(H) (two-sided):</th>    <td>0.01</td>  <th>  Kurtosis:          </th> <td>3.83</td>
+  <th>Prob(H) (two-sided):</th>    <td>0.00</td>  <th>  Kurtosis:          </th> <td>5.67</td> 
 </tr>
-</table><br/><br/>Warnings:<br/>[1] Covariance matrix calculated using the outer product of gradients (complex-step).<br/>[2] Covariance matrix is singular or near-singular, with condition number 6.35e+26. Standard errors may be unstable.
+</table><br/><br/>Warnings:<br/>[1] Covariance matrix calculated using the outer product of gradients (complex-step).<br/>[2] Covariance matrix is singular or near-singular, with condition number 1.13e+29. Standard errors may be unstable.
 
 
 
@@ -3685,22 +3684,22 @@ for zipcode in zipcode_list:
 <table class="simpletable">
 <caption>SARIMAX Results</caption>
 <tr>
-  <th>Dep. Variable:</th>         <td>83705</td>      <th>  No. Observations:  </th>    <td>48</td>   
+  <th>Dep. Variable:</th>         <td>83705</td>      <th>  No. Observations:  </th>    <td>64</td>   
 </tr>
 <tr>
-  <th>Model:</th>           <td>SARIMAX(0, 2, 2)</td> <th>  Log Likelihood     </th> <td>-343.421</td>
+  <th>Model:</th>           <td>SARIMAX(0, 2, 2)</td> <th>  Log Likelihood     </th> <td>-508.520</td>
 </tr>
 <tr>
-  <th>Date:</th>            <td>Sun, 20 Dec 2020</td> <th>  AIC                </th>  <td>692.843</td>
+  <th>Date:</th>            <td>Wed, 23 Dec 2020</td> <th>  AIC                </th> <td>1023.040</td>
 </tr>
 <tr>
-  <th>Time:</th>                <td>23:56:18</td>     <th>  BIC                </th>  <td>698.328</td>
+  <th>Time:</th>                <td>21:06:25</td>     <th>  BIC                </th> <td>1029.422</td>
 </tr>
 <tr>
-  <th>Sample:</th>             <td>01-01-2013</td>    <th>  HQIC               </th>  <td>694.898</td>
+  <th>Sample:</th>             <td>01-01-2013</td>    <th>  HQIC               </th> <td>1025.546</td>
 </tr>
 <tr>
-  <th></th>                   <td>- 12-01-2016</td>   <th>                     </th>     <td> </td>   
+  <th></th>                   <td>- 04-01-2018</td>   <th>                     </th>     <td> </td>   
 </tr>
 <tr>
   <th>Covariance Type:</th>        <td>opg</td>       <th>                     </th>     <td> </td>   
@@ -3711,27 +3710,27 @@ for zipcode in zipcode_list:
      <td></td>       <th>coef</th>     <th>std err</th>      <th>z</th>      <th>P>|z|</th>  <th>[0.025</th>    <th>0.975]</th>  
 </tr>
 <tr>
-  <th>ma.L1</th>  <td>   -0.0444</td> <td>    0.085</td> <td>   -0.525</td> <td> 0.600</td> <td>   -0.210</td> <td>    0.121</td>
+  <th>ma.L1</th>  <td>   -0.0126</td> <td>    0.031</td> <td>   -0.405</td> <td> 0.685</td> <td>   -0.074</td> <td>    0.048</td>
 </tr>
 <tr>
-  <th>ma.L2</th>  <td>   -0.0441</td> <td>    0.083</td> <td>   -0.533</td> <td> 0.594</td> <td>   -0.206</td> <td>    0.118</td>
+  <th>ma.L2</th>  <td>   -0.0193</td> <td>    0.050</td> <td>   -0.388</td> <td> 0.698</td> <td>   -0.117</td> <td>    0.078</td>
 </tr>
 <tr>
-  <th>sigma2</th> <td> 1.763e+05</td> <td> 4.77e+04</td> <td>    3.695</td> <td> 0.000</td> <td> 8.28e+04</td> <td>  2.7e+05</td>
+  <th>sigma2</th> <td> 6.725e+05</td> <td>  6.1e+04</td> <td>   11.017</td> <td> 0.000</td> <td> 5.53e+05</td> <td> 7.92e+05</td>
 </tr>
 </table>
 <table class="simpletable">
 <tr>
-  <th>Ljung-Box (L1) (Q):</th>     <td>1.67</td> <th>  Jarque-Bera (JB):  </th> <td>0.24</td> 
+  <th>Ljung-Box (L1) (Q):</th>     <td>12.30</td> <th>  Jarque-Bera (JB):  </th> <td>110.76</td>
 </tr>
 <tr>
-  <th>Prob(Q):</th>                <td>0.20</td> <th>  Prob(JB):          </th> <td>0.89</td> 
+  <th>Prob(Q):</th>                <td>0.00</td>  <th>  Prob(JB):          </th>  <td>0.00</td> 
 </tr>
 <tr>
-  <th>Heteroskedasticity (H):</th> <td>0.84</td> <th>  Skew:              </th> <td>-0.00</td>
+  <th>Heteroskedasticity (H):</th> <td>10.91</td> <th>  Skew:              </th>  <td>-1.33</td>
 </tr>
 <tr>
-  <th>Prob(H) (two-sided):</th>    <td>0.75</td> <th>  Kurtosis:          </th> <td>2.65</td> 
+  <th>Prob(H) (two-sided):</th>    <td>0.00</td>  <th>  Kurtosis:          </th>  <td>8.98</td> 
 </tr>
 </table><br/><br/>Warnings:<br/>[1] Covariance matrix calculated using the outer product of gradients (complex-step).
 
@@ -3749,22 +3748,22 @@ for zipcode in zipcode_list:
 <table class="simpletable">
 <caption>SARIMAX Results</caption>
 <tr>
-  <th>Dep. Variable:</th>         <td>83702</td>      <th>  No. Observations:  </th>    <td>48</td>   
+  <th>Dep. Variable:</th>         <td>83702</td>      <th>  No. Observations:  </th>    <td>64</td>   
 </tr>
 <tr>
-  <th>Model:</th>           <td>SARIMAX(0, 2, 0)</td> <th>  Log Likelihood     </th> <td>-382.589</td>
+  <th>Model:</th>           <td>SARIMAX(0, 2, 0)</td> <th>  Log Likelihood     </th> <td>-567.448</td>
 </tr>
 <tr>
-  <th>Date:</th>            <td>Sun, 20 Dec 2020</td> <th>  AIC                </th>  <td>767.178</td>
+  <th>Date:</th>            <td>Wed, 23 Dec 2020</td> <th>  AIC                </th> <td>1136.896</td>
 </tr>
 <tr>
-  <th>Time:</th>                <td>23:56:19</td>     <th>  BIC                </th>  <td>769.006</td>
+  <th>Time:</th>                <td>21:06:26</td>     <th>  BIC                </th> <td>1139.023</td>
 </tr>
 <tr>
-  <th>Sample:</th>             <td>01-01-2013</td>    <th>  HQIC               </th>  <td>767.863</td>
+  <th>Sample:</th>             <td>01-01-2013</td>    <th>  HQIC               </th> <td>1137.731</td>
 </tr>
 <tr>
-  <th></th>                   <td>- 12-01-2016</td>   <th>                     </th>     <td> </td>   
+  <th></th>                   <td>- 04-01-2018</td>   <th>                     </th>     <td> </td>   
 </tr>
 <tr>
   <th>Covariance Type:</th>        <td>opg</td>       <th>                     </th>     <td> </td>   
@@ -3775,21 +3774,21 @@ for zipcode in zipcode_list:
      <td></td>       <th>coef</th>     <th>std err</th>      <th>z</th>      <th>P>|z|</th>  <th>[0.025</th>    <th>0.975]</th>  
 </tr>
 <tr>
-  <th>sigma2</th> <td> 9.795e+05</td> <td> 2.37e+05</td> <td>    4.127</td> <td> 0.000</td> <td> 5.14e+05</td> <td> 1.44e+06</td>
+  <th>sigma2</th> <td> 5.209e+06</td> <td> 4.04e+05</td> <td>   12.899</td> <td> 0.000</td> <td> 4.42e+06</td> <td>    6e+06</td>
 </tr>
 </table>
 <table class="simpletable">
 <tr>
-  <th>Ljung-Box (L1) (Q):</th>     <td>8.24</td> <th>  Jarque-Bera (JB):  </th> <td>0.64</td> 
+  <th>Ljung-Box (L1) (Q):</th>     <td>7.58</td>  <th>  Jarque-Bera (JB):  </th> <td>217.80</td>
 </tr>
 <tr>
-  <th>Prob(Q):</th>                <td>0.00</td> <th>  Prob(JB):          </th> <td>0.73</td> 
+  <th>Prob(Q):</th>                <td>0.01</td>  <th>  Prob(JB):          </th>  <td>0.00</td> 
 </tr>
 <tr>
-  <th>Heteroskedasticity (H):</th> <td>0.60</td> <th>  Skew:              </th> <td>-0.17</td>
+  <th>Heteroskedasticity (H):</th> <td>15.16</td> <th>  Skew:              </th>  <td>1.74</td> 
 </tr>
 <tr>
-  <th>Prob(H) (two-sided):</th>    <td>0.33</td> <th>  Kurtosis:          </th> <td>2.53</td> 
+  <th>Prob(H) (two-sided):</th>    <td>0.00</td>  <th>  Kurtosis:          </th>  <td>11.50</td>
 </tr>
 </table><br/><br/>Warnings:<br/>[1] Covariance matrix calculated using the outer product of gradients (complex-step).
 
@@ -3807,22 +3806,22 @@ for zipcode in zipcode_list:
 <table class="simpletable">
 <caption>SARIMAX Results</caption>
 <tr>
-  <th>Dep. Variable:</th>         <td>83616</td>      <th>  No. Observations:  </th>    <td>48</td>   
+  <th>Dep. Variable:</th>         <td>83616</td>      <th>  No. Observations:  </th>    <td>64</td>   
 </tr>
 <tr>
-  <th>Model:</th>           <td>SARIMAX(0, 1, 0)</td> <th>  Log Likelihood     </th> <td>-441.697</td>
+  <th>Model:</th>           <td>SARIMAX(0, 1, 0)</td> <th>  Log Likelihood     </th> <td>-627.522</td>
 </tr>
 <tr>
-  <th>Date:</th>            <td>Sun, 20 Dec 2020</td> <th>  AIC                </th>  <td>885.393</td>
+  <th>Date:</th>            <td>Wed, 23 Dec 2020</td> <th>  AIC                </th> <td>1257.045</td>
 </tr>
 <tr>
-  <th>Time:</th>                <td>23:56:19</td>     <th>  BIC                </th>  <td>887.243</td>
+  <th>Time:</th>                <td>21:06:27</td>     <th>  BIC                </th> <td>1259.188</td>
 </tr>
 <tr>
-  <th>Sample:</th>             <td>01-01-2013</td>    <th>  HQIC               </th>  <td>886.090</td>
+  <th>Sample:</th>             <td>01-01-2013</td>    <th>  HQIC               </th> <td>1257.888</td>
 </tr>
 <tr>
-  <th></th>                   <td>- 12-01-2016</td>   <th>                     </th>     <td> </td>   
+  <th></th>                   <td>- 04-01-2018</td>   <th>                     </th>     <td> </td>   
 </tr>
 <tr>
   <th>Covariance Type:</th>        <td>opg</td>       <th>                     </th>     <td> </td>   
@@ -3833,21 +3832,21 @@ for zipcode in zipcode_list:
      <td></td>       <th>coef</th>     <th>std err</th>      <th>z</th>      <th>P>|z|</th>  <th>[0.025</th>    <th>0.975]</th>  
 </tr>
 <tr>
-  <th>sigma2</th> <td> 8.339e+06</td> <td> 1.47e+06</td> <td>    5.675</td> <td> 0.000</td> <td> 5.46e+06</td> <td> 1.12e+07</td>
+  <th>sigma2</th> <td> 2.584e+07</td> <td> 1.84e+06</td> <td>   14.067</td> <td> 0.000</td> <td> 2.22e+07</td> <td> 2.94e+07</td>
 </tr>
 </table>
 <table class="simpletable">
 <tr>
-  <th>Ljung-Box (L1) (Q):</th>     <td>33.89</td> <th>  Jarque-Bera (JB):  </th> <td>6.59</td>
+  <th>Ljung-Box (L1) (Q):</th>     <td>28.61</td> <th>  Jarque-Bera (JB):  </th> <td>407.20</td>
 </tr>
 <tr>
-  <th>Prob(Q):</th>                <td>0.00</td>  <th>  Prob(JB):          </th> <td>0.04</td>
+  <th>Prob(Q):</th>                <td>0.00</td>  <th>  Prob(JB):          </th>  <td>0.00</td> 
 </tr>
 <tr>
-  <th>Heteroskedasticity (H):</th> <td>3.21</td>  <th>  Skew:              </th> <td>0.88</td>
+  <th>Heteroskedasticity (H):</th> <td>13.91</td> <th>  Skew:              </th>  <td>2.84</td> 
 </tr>
 <tr>
-  <th>Prob(H) (two-sided):</th>    <td>0.03</td>  <th>  Kurtosis:          </th> <td>3.48</td>
+  <th>Prob(H) (two-sided):</th>    <td>0.00</td>  <th>  Kurtosis:          </th>  <td>14.08</td>
 </tr>
 </table><br/><br/>Warnings:<br/>[1] Covariance matrix calculated using the outer product of gradients (complex-step).
 
@@ -3865,22 +3864,22 @@ for zipcode in zipcode_list:
 <table class="simpletable">
 <caption>SARIMAX Results</caption>
 <tr>
-  <th>Dep. Variable:</th>         <td>83713</td>      <th>  No. Observations:  </th>    <td>48</td>   
+  <th>Dep. Variable:</th>         <td>83713</td>      <th>  No. Observations:  </th>    <td>64</td>   
 </tr>
 <tr>
-  <th>Model:</th>           <td>SARIMAX(3, 1, 1)</td> <th>  Log Likelihood     </th> <td>-389.075</td>
+  <th>Model:</th>           <td>SARIMAX(3, 1, 1)</td> <th>  Log Likelihood     </th> <td>-635.980</td>
 </tr>
 <tr>
-  <th>Date:</th>            <td>Sun, 20 Dec 2020</td> <th>  AIC                </th>  <td>788.150</td>
+  <th>Date:</th>            <td>Wed, 23 Dec 2020</td> <th>  AIC                </th> <td>1281.961</td>
 </tr>
 <tr>
-  <th>Time:</th>                <td>23:56:22</td>     <th>  BIC                </th>  <td>797.401</td>
+  <th>Time:</th>                <td>21:06:31</td>     <th>  BIC                </th> <td>1292.676</td>
 </tr>
 <tr>
-  <th>Sample:</th>             <td>01-01-2013</td>    <th>  HQIC               </th>  <td>791.632</td>
+  <th>Sample:</th>             <td>01-01-2013</td>    <th>  HQIC               </th> <td>1286.175</td>
 </tr>
 <tr>
-  <th></th>                   <td>- 12-01-2016</td>   <th>                     </th>     <td> </td>   
+  <th></th>                   <td>- 04-01-2018</td>   <th>                     </th>     <td> </td>   
 </tr>
 <tr>
   <th>Covariance Type:</th>        <td>opg</td>       <th>                     </th>     <td> </td>   
@@ -3891,35 +3890,35 @@ for zipcode in zipcode_list:
      <td></td>       <th>coef</th>     <th>std err</th>      <th>z</th>      <th>P>|z|</th>  <th>[0.025</th>    <th>0.975]</th>  
 </tr>
 <tr>
-  <th>ar.L1</th>  <td>    0.8544</td> <td>    0.066</td> <td>   12.957</td> <td> 0.000</td> <td>    0.725</td> <td>    0.984</td>
+  <th>ar.L1</th>  <td>    1.0277</td> <td>    0.008</td> <td>  132.534</td> <td> 0.000</td> <td>    1.012</td> <td>    1.043</td>
 </tr>
 <tr>
-  <th>ar.L2</th>  <td>    0.0170</td> <td>    0.053</td> <td>    0.324</td> <td> 0.746</td> <td>   -0.086</td> <td>    0.120</td>
+  <th>ar.L2</th>  <td>   -0.0215</td> <td>    0.025</td> <td>   -0.874</td> <td> 0.382</td> <td>   -0.070</td> <td>    0.027</td>
 </tr>
 <tr>
-  <th>ar.L3</th>  <td>    0.0271</td> <td>    0.045</td> <td>    0.606</td> <td> 0.545</td> <td>   -0.061</td> <td>    0.115</td>
+  <th>ar.L3</th>  <td>   -0.0067</td> <td>    0.023</td> <td>   -0.292</td> <td> 0.771</td> <td>   -0.052</td> <td>    0.038</td>
 </tr>
 <tr>
-  <th>ma.L1</th>  <td>   -0.8503</td> <td>    0.060</td> <td>  -14.141</td> <td> 0.000</td> <td>   -0.968</td> <td>   -0.732</td>
+  <th>ma.L1</th>  <td>   -0.9963</td> <td>    0.013</td> <td>  -74.147</td> <td> 0.000</td> <td>   -1.023</td> <td>   -0.970</td>
 </tr>
 <tr>
-  <th>sigma2</th> <td> 8.376e+05</td> <td> 1.35e-08</td> <td> 6.22e+13</td> <td> 0.000</td> <td> 8.38e+05</td> <td> 8.38e+05</td>
+  <th>sigma2</th> <td> 1.664e+06</td> <td> 8.26e-09</td> <td> 2.01e+14</td> <td> 0.000</td> <td> 1.66e+06</td> <td> 1.66e+06</td>
 </tr>
 </table>
 <table class="simpletable">
 <tr>
-  <th>Ljung-Box (L1) (Q):</th>     <td>29.95</td> <th>  Jarque-Bera (JB):  </th> <td>2.88</td>
+  <th>Ljung-Box (L1) (Q):</th>     <td>30.10</td> <th>  Jarque-Bera (JB):  </th> <td>236.75</td>
 </tr>
 <tr>
-  <th>Prob(Q):</th>                <td>0.00</td>  <th>  Prob(JB):          </th> <td>0.24</td>
+  <th>Prob(Q):</th>                <td>0.00</td>  <th>  Prob(JB):          </th>  <td>0.00</td> 
 </tr>
 <tr>
-  <th>Heteroskedasticity (H):</th> <td>7.18</td>  <th>  Skew:              </th> <td>0.48</td>
+  <th>Heteroskedasticity (H):</th> <td>9.10</td>  <th>  Skew:              </th>  <td>1.87</td> 
 </tr>
 <tr>
-  <th>Prob(H) (two-sided):</th>    <td>0.00</td>  <th>  Kurtosis:          </th> <td>2.26</td>
+  <th>Prob(H) (two-sided):</th>    <td>0.00</td>  <th>  Kurtosis:          </th>  <td>11.73</td>
 </tr>
-</table><br/><br/>Warnings:<br/>[1] Covariance matrix calculated using the outer product of gradients (complex-step).<br/>[2] Covariance matrix is singular or near-singular, with condition number 2.48e+29. Standard errors may be unstable.
+</table><br/><br/>Warnings:<br/>[1] Covariance matrix calculated using the outer product of gradients (complex-step).<br/>[2] Covariance matrix is singular or near-singular, with condition number 1.58e+29. Standard errors may be unstable.
 
 
 
@@ -3935,22 +3934,22 @@ for zipcode in zipcode_list:
 <table class="simpletable">
 <caption>SARIMAX Results</caption>
 <tr>
-  <th>Dep. Variable:</th>         <td>83714</td>      <th>  No. Observations:  </th>    <td>48</td>   
+  <th>Dep. Variable:</th>         <td>83714</td>      <th>  No. Observations:  </th>    <td>64</td>   
 </tr>
 <tr>
-  <th>Model:</th>           <td>SARIMAX(0, 1, 0)</td> <th>  Log Likelihood     </th> <td>-426.294</td>
+  <th>Model:</th>           <td>SARIMAX(4, 1, 1)</td> <th>  Log Likelihood     </th> <td>-585.172</td>
 </tr>
 <tr>
-  <th>Date:</th>            <td>Sun, 20 Dec 2020</td> <th>  AIC                </th>  <td>854.589</td>
+  <th>Date:</th>            <td>Wed, 23 Dec 2020</td> <th>  AIC                </th> <td>1182.344</td>
 </tr>
 <tr>
-  <th>Time:</th>                <td>23:56:22</td>     <th>  BIC                </th>  <td>856.439</td>
+  <th>Time:</th>                <td>21:06:35</td>     <th>  BIC                </th> <td>1195.203</td>
 </tr>
 <tr>
-  <th>Sample:</th>             <td>01-01-2013</td>    <th>  HQIC               </th>  <td>855.285</td>
+  <th>Sample:</th>             <td>01-01-2013</td>    <th>  HQIC               </th> <td>1187.401</td>
 </tr>
 <tr>
-  <th></th>                   <td>- 12-01-2016</td>   <th>                     </th>     <td> </td>   
+  <th></th>                   <td>- 04-01-2018</td>   <th>                     </th>     <td> </td>   
 </tr>
 <tr>
   <th>Covariance Type:</th>        <td>opg</td>       <th>                     </th>     <td> </td>   
@@ -3961,23 +3960,38 @@ for zipcode in zipcode_list:
      <td></td>       <th>coef</th>     <th>std err</th>      <th>z</th>      <th>P>|z|</th>  <th>[0.025</th>    <th>0.975]</th>  
 </tr>
 <tr>
-  <th>sigma2</th> <td> 4.351e+06</td> <td> 1.12e+06</td> <td>    3.890</td> <td> 0.000</td> <td> 2.16e+06</td> <td> 6.54e+06</td>
+  <th>ar.L1</th>  <td>    1.0045</td> <td>    0.009</td> <td>  105.812</td> <td> 0.000</td> <td>    0.986</td> <td>    1.023</td>
+</tr>
+<tr>
+  <th>ar.L2</th>  <td>   -0.0048</td> <td>    0.036</td> <td>   -0.136</td> <td> 0.892</td> <td>   -0.075</td> <td>    0.065</td>
+</tr>
+<tr>
+  <th>ar.L3</th>  <td>    0.0151</td> <td>    0.045</td> <td>    0.338</td> <td> 0.735</td> <td>   -0.072</td> <td>    0.103</td>
+</tr>
+<tr>
+  <th>ar.L4</th>  <td>   -0.0149</td> <td>    0.027</td> <td>   -0.546</td> <td> 0.585</td> <td>   -0.069</td> <td>    0.039</td>
+</tr>
+<tr>
+  <th>ma.L1</th>  <td>   -0.9976</td> <td>    0.018</td> <td>  -55.063</td> <td> 0.000</td> <td>   -1.033</td> <td>   -0.962</td>
+</tr>
+<tr>
+  <th>sigma2</th> <td> 1.508e+06</td> <td> 5.68e-09</td> <td> 2.66e+14</td> <td> 0.000</td> <td> 1.51e+06</td> <td> 1.51e+06</td>
 </tr>
 </table>
 <table class="simpletable">
 <tr>
-  <th>Ljung-Box (L1) (Q):</th>     <td>36.53</td> <th>  Jarque-Bera (JB):  </th> <td>0.46</td> 
+  <th>Ljung-Box (L1) (Q):</th>     <td>28.29</td> <th>  Jarque-Bera (JB):  </th> <td>68.08</td>
 </tr>
 <tr>
-  <th>Prob(Q):</th>                <td>0.00</td>  <th>  Prob(JB):          </th> <td>0.79</td> 
+  <th>Prob(Q):</th>                <td>0.00</td>  <th>  Prob(JB):          </th> <td>0.00</td> 
 </tr>
 <tr>
-  <th>Heteroskedasticity (H):</th> <td>1.02</td>  <th>  Skew:              </th> <td>-0.00</td>
+  <th>Heteroskedasticity (H):</th> <td>2.77</td>  <th>  Skew:              </th> <td>1.37</td> 
 </tr>
 <tr>
-  <th>Prob(H) (two-sided):</th>    <td>0.97</td>  <th>  Kurtosis:          </th> <td>2.52</td> 
+  <th>Prob(H) (two-sided):</th>    <td>0.02</td>  <th>  Kurtosis:          </th> <td>7.29</td> 
 </tr>
-</table><br/><br/>Warnings:<br/>[1] Covariance matrix calculated using the outer product of gradients (complex-step).
+</table><br/><br/>Warnings:<br/>[1] Covariance matrix calculated using the outer product of gradients (complex-step).<br/>[2] Covariance matrix is singular or near-singular, with condition number 5.64e+29. Standard errors may be unstable.
 
 
 
@@ -3993,22 +4007,22 @@ for zipcode in zipcode_list:
 <table class="simpletable">
 <caption>SARIMAX Results</caption>
 <tr>
-  <th>Dep. Variable:</th>         <td>83703</td>      <th>  No. Observations:  </th>    <td>48</td>   
+  <th>Dep. Variable:</th>         <td>83703</td>      <th>  No. Observations:  </th>    <td>64</td>   
 </tr>
 <tr>
-  <th>Model:</th>           <td>SARIMAX(0, 1, 0)</td> <th>  Log Likelihood     </th> <td>-419.549</td>
+  <th>Model:</th>           <td>SARIMAX(0, 2, 0)</td> <th>  Log Likelihood     </th> <td>-524.706</td>
 </tr>
 <tr>
-  <th>Date:</th>            <td>Sun, 20 Dec 2020</td> <th>  AIC                </th>  <td>841.098</td>
+  <th>Date:</th>            <td>Wed, 23 Dec 2020</td> <th>  AIC                </th> <td>1051.412</td>
 </tr>
 <tr>
-  <th>Time:</th>                <td>23:56:23</td>     <th>  BIC                </th>  <td>842.948</td>
+  <th>Time:</th>                <td>21:06:36</td>     <th>  BIC                </th> <td>1053.539</td>
 </tr>
 <tr>
-  <th>Sample:</th>             <td>01-01-2013</td>    <th>  HQIC               </th>  <td>841.794</td>
+  <th>Sample:</th>             <td>01-01-2013</td>    <th>  HQIC               </th> <td>1052.247</td>
 </tr>
 <tr>
-  <th></th>                   <td>- 12-01-2016</td>   <th>                     </th>     <td> </td>   
+  <th></th>                   <td>- 04-01-2018</td>   <th>                     </th>     <td> </td>   
 </tr>
 <tr>
   <th>Covariance Type:</th>        <td>opg</td>       <th>                     </th>     <td> </td>   
@@ -4019,21 +4033,21 @@ for zipcode in zipcode_list:
      <td></td>       <th>coef</th>     <th>std err</th>      <th>z</th>      <th>P>|z|</th>  <th>[0.025</th>    <th>0.975]</th>  
 </tr>
 <tr>
-  <th>sigma2</th> <td> 3.268e+06</td> <td> 8.17e+05</td> <td>    3.999</td> <td> 0.000</td> <td> 1.67e+06</td> <td> 4.87e+06</td>
+  <th>sigma2</th> <td> 1.312e+06</td> <td> 1.15e+05</td> <td>   11.398</td> <td> 0.000</td> <td> 1.09e+06</td> <td> 1.54e+06</td>
 </tr>
 </table>
 <table class="simpletable">
 <tr>
-  <th>Ljung-Box (L1) (Q):</th>     <td>31.09</td> <th>  Jarque-Bera (JB):  </th> <td>3.75</td>
+  <th>Ljung-Box (L1) (Q):</th>     <td>8.19</td> <th>  Jarque-Bera (JB):  </th> <td>105.02</td>
 </tr>
 <tr>
-  <th>Prob(Q):</th>                <td>0.00</td>  <th>  Prob(JB):          </th> <td>0.15</td>
+  <th>Prob(Q):</th>                <td>0.00</td> <th>  Prob(JB):          </th>  <td>0.00</td> 
 </tr>
 <tr>
-  <th>Heteroskedasticity (H):</th> <td>1.56</td>  <th>  Skew:              </th> <td>0.68</td>
+  <th>Heteroskedasticity (H):</th> <td>9.18</td> <th>  Skew:              </th>  <td>0.08</td> 
 </tr>
 <tr>
-  <th>Prob(H) (two-sided):</th>    <td>0.38</td>  <th>  Kurtosis:          </th> <td>2.77</td>
+  <th>Prob(H) (two-sided):</th>    <td>0.00</td> <th>  Kurtosis:          </th>  <td>9.37</td> 
 </tr>
 </table><br/><br/>Warnings:<br/>[1] Covariance matrix calculated using the outer product of gradients (complex-step).
 
@@ -4051,22 +4065,22 @@ for zipcode in zipcode_list:
 <table class="simpletable">
 <caption>SARIMAX Results</caption>
 <tr>
-  <th>Dep. Variable:</th>         <td>83716</td>      <th>  No. Observations:  </th>    <td>48</td>   
+  <th>Dep. Variable:</th>         <td>83716</td>      <th>  No. Observations:  </th>    <td>64</td>   
 </tr>
 <tr>
-  <th>Model:</th>           <td>SARIMAX(0, 1, 0)</td> <th>  Log Likelihood     </th> <td>-419.908</td>
+  <th>Model:</th>           <td>SARIMAX(0, 1, 0)</td> <th>  Log Likelihood     </th> <td>-565.042</td>
 </tr>
 <tr>
-  <th>Date:</th>            <td>Sun, 20 Dec 2020</td> <th>  AIC                </th>  <td>841.816</td>
+  <th>Date:</th>            <td>Wed, 23 Dec 2020</td> <th>  AIC                </th> <td>1132.084</td>
 </tr>
 <tr>
-  <th>Time:</th>                <td>23:56:24</td>     <th>  BIC                </th>  <td>843.666</td>
+  <th>Time:</th>                <td>21:06:37</td>     <th>  BIC                </th> <td>1134.227</td>
 </tr>
 <tr>
-  <th>Sample:</th>             <td>01-01-2013</td>    <th>  HQIC               </th>  <td>842.512</td>
+  <th>Sample:</th>             <td>01-01-2013</td>    <th>  HQIC               </th> <td>1132.927</td>
 </tr>
 <tr>
-  <th></th>                   <td>- 12-01-2016</td>   <th>                     </th>     <td> </td>   
+  <th></th>                   <td>- 04-01-2018</td>   <th>                     </th>     <td> </td>   
 </tr>
 <tr>
   <th>Covariance Type:</th>        <td>opg</td>       <th>                     </th>     <td> </td>   
@@ -4077,21 +4091,21 @@ for zipcode in zipcode_list:
      <td></td>       <th>coef</th>     <th>std err</th>      <th>z</th>      <th>P>|z|</th>  <th>[0.025</th>    <th>0.975]</th>  
 </tr>
 <tr>
-  <th>sigma2</th> <td> 3.318e+06</td> <td>  6.3e+05</td> <td>    5.269</td> <td> 0.000</td> <td> 2.08e+06</td> <td> 4.55e+06</td>
+  <th>sigma2</th> <td> 3.556e+06</td> <td>  6.7e+05</td> <td>    5.305</td> <td> 0.000</td> <td> 2.24e+06</td> <td> 4.87e+06</td>
 </tr>
 </table>
 <table class="simpletable">
 <tr>
-  <th>Ljung-Box (L1) (Q):</th>     <td>24.84</td> <th>  Jarque-Bera (JB):  </th> <td>14.20</td>
+  <th>Ljung-Box (L1) (Q):</th>     <td>23.46</td> <th>  Jarque-Bera (JB):  </th> <td>3.93</td>
 </tr>
 <tr>
-  <th>Prob(Q):</th>                <td>0.00</td>  <th>  Prob(JB):          </th> <td>0.00</td> 
+  <th>Prob(Q):</th>                <td>0.00</td>  <th>  Prob(JB):          </th> <td>0.14</td>
 </tr>
 <tr>
-  <th>Heteroskedasticity (H):</th> <td>0.52</td>  <th>  Skew:              </th> <td>0.66</td> 
+  <th>Heteroskedasticity (H):</th> <td>0.89</td>  <th>  Skew:              </th> <td>0.13</td>
 </tr>
 <tr>
-  <th>Prob(H) (two-sided):</th>    <td>0.20</td>  <th>  Kurtosis:          </th> <td>5.35</td> 
+  <th>Prob(H) (two-sided):</th>    <td>0.80</td>  <th>  Kurtosis:          </th> <td>4.20</td>
 </tr>
 </table><br/><br/>Warnings:<br/>[1] Covariance matrix calculated using the outer product of gradients (complex-step).
 
@@ -4109,22 +4123,22 @@ for zipcode in zipcode_list:
 <table class="simpletable">
 <caption>SARIMAX Results</caption>
 <tr>
-  <th>Dep. Variable:</th>         <td>83712</td>      <th>  No. Observations:  </th>    <td>48</td>   
+  <th>Dep. Variable:</th>         <td>83712</td>      <th>  No. Observations:  </th>    <td>64</td>   
 </tr>
 <tr>
-  <th>Model:</th>           <td>SARIMAX(0, 1, 0)</td> <th>  Log Likelihood     </th> <td>-444.382</td>
+  <th>Model:</th>           <td>SARIMAX(0, 1, 0)</td> <th>  Log Likelihood     </th> <td>-602.552</td>
 </tr>
 <tr>
-  <th>Date:</th>            <td>Sun, 20 Dec 2020</td> <th>  AIC                </th>  <td>890.764</td>
+  <th>Date:</th>            <td>Wed, 23 Dec 2020</td> <th>  AIC                </th> <td>1207.103</td>
 </tr>
 <tr>
-  <th>Time:</th>                <td>23:56:24</td>     <th>  BIC                </th>  <td>892.614</td>
+  <th>Time:</th>                <td>21:06:38</td>     <th>  BIC                </th> <td>1209.246</td>
 </tr>
 <tr>
-  <th>Sample:</th>             <td>01-01-2013</td>    <th>  HQIC               </th>  <td>891.460</td>
+  <th>Sample:</th>             <td>01-01-2013</td>    <th>  HQIC               </th> <td>1207.946</td>
 </tr>
 <tr>
-  <th></th>                   <td>- 12-01-2016</td>   <th>                     </th>     <td> </td>   
+  <th></th>                   <td>- 04-01-2018</td>   <th>                     </th>     <td> </td>   
 </tr>
 <tr>
   <th>Covariance Type:</th>        <td>opg</td>       <th>                     </th>     <td> </td>   
@@ -4135,21 +4149,21 @@ for zipcode in zipcode_list:
      <td></td>       <th>coef</th>     <th>std err</th>      <th>z</th>      <th>P>|z|</th>  <th>[0.025</th>    <th>0.975]</th>  
 </tr>
 <tr>
-  <th>sigma2</th> <td> 9.348e+06</td> <td> 1.45e+06</td> <td>    6.447</td> <td> 0.000</td> <td> 6.51e+06</td> <td> 1.22e+07</td>
+  <th>sigma2</th> <td>  1.17e+07</td> <td> 1.86e+06</td> <td>    6.287</td> <td> 0.000</td> <td> 8.05e+06</td> <td> 1.53e+07</td>
 </tr>
 </table>
 <table class="simpletable">
 <tr>
-  <th>Ljung-Box (L1) (Q):</th>     <td>34.21</td> <th>  Jarque-Bera (JB):  </th> <td>19.82</td>
+  <th>Ljung-Box (L1) (Q):</th>     <td>25.69</td> <th>  Jarque-Bera (JB):  </th> <td>5.55</td>
 </tr>
 <tr>
-  <th>Prob(Q):</th>                <td>0.00</td>  <th>  Prob(JB):          </th> <td>0.00</td> 
+  <th>Prob(Q):</th>                <td>0.00</td>  <th>  Prob(JB):          </th> <td>0.06</td>
 </tr>
 <tr>
-  <th>Heteroskedasticity (H):</th> <td>2.92</td>  <th>  Skew:              </th> <td>1.40</td> 
+  <th>Heteroskedasticity (H):</th> <td>4.49</td>  <th>  Skew:              </th> <td>0.66</td>
 </tr>
 <tr>
-  <th>Prob(H) (two-sided):</th>    <td>0.04</td>  <th>  Kurtosis:          </th> <td>4.52</td> 
+  <th>Prob(H) (two-sided):</th>    <td>0.00</td>  <th>  Kurtosis:          </th> <td>3.59</td>
 </tr>
 </table><br/><br/>Warnings:<br/>[1] Covariance matrix calculated using the outer product of gradients (complex-step).
 
@@ -4164,45 +4178,846 @@ for zipcode in zipcode_list:
 
 # iNTERPRET
 
-> **To evaluate our predictions, let's rank each zipcode's model from lowest Akaike Information Criterion (AIC) to the highest. It's important to note that AIC values are only meaningful when compared to each other and not off of raw magnitude.**
+> - **Since all of our predictions were stored in a dictionary, we can easily calculate our expected ROI by subtracting the 2-year forecated median value (2020-04-01) for both the upper and lower confidence intervals from the starting median home price (2018-04-01)**
 
-83705- AIC: 692.843  
-83702- AIC: 767.178  
-83709- AIC: 777.477  
-83713- AIC: 788.150   
-83706- AIC: 803.329  
-83704- AIC: 816.091  
-83703- AIC: 841.098  
-83716- AIC: 841.816  
-83714- AIC: 854.589  
-83616- AIC: 885.393  
-83712- AIC: 890.764  
-
-> "The AIC is a model selection tool that strikes a balance between goodness-of-fit i.e. how well a model fits a data set, and how badly it over-fits it in its effort to fit the data set."
-
-> "A lower score indicates that the model has a superior capacity to balance goodness-of-fit with the risk of over-fitting the data set."
+> - **This will give us are highest ROI potential, as well as our lowest.**
 
 
+```python
+# BUILD A FUNCTION TO CALCULATE ROI BASED OFF THE 2-YEAR FORECASTS
 
-> Source: https://timeseriesreasoning.com/2019/11/16/how-to-select-a-regression-model-using-aic/
+ROI_list = [['Zipcode', 'Investment price', 'Mean ROI', 
+             'High ROI', 'Low ROI', '% ROI', '% High', '% Low']]
+ROI_upper = []
+ROI_lower = []
+  
+for zipcode in zipcode_list: 
+    '''Print out max and min ROI and risk assessment for each zipcode'''
+    
+    print('Zipcode: ', zipcode)
+    print('--------')
+    start_price = round(RESULTS[zipcode]['test']['2018-04-01'])
+    lower = round(RESULTS[zipcode]['pred_df']['lower']['2020-04-01'])
+    upper = round(RESULTS[zipcode]['pred_df']['upper']['2020-04-01'])
+    mean = round(RESULTS[zipcode]['pred_df']['prediction']['2020-04-01'])
+
+    ROI_lower = round(lower - start_price)
+    ROI_upper = round(upper - start_price)
+
+    percent_ROI = (mean - start_price)/start_price * 100
+    percent_lower = ROI_lower/start_price * 100
+    percent_upper = ROI_upper/start_price * 100
+    
+    ROI = f"Max ROI: ${ROI_upper} <---> Min ROI: ${ROI_lower}"
+    ROI_list.append([zipcode, start_price, mean, upper, lower, percent_ROI, 
+                    percent_upper, percent_lower]) 
+    
+    
+    if ROI_lower <= 0: 
+        print('High-risk - negative ROI possible')
+
+    else: 
+        print('Low-risk')
+    
+    print(ROI)
+    print(f"\n")
+    
+ROI_df = pd.DataFrame(ROI_list[1:], columns=ROI_list[0]).round(2).sort_values('% Low')
+
+ROI_df.set_index('Zipcode', inplace=True)
+
+    
+
+```
+
+    Zipcode:  83709
+    --------
+    High-risk - negative ROI possible
+    Max ROI: $24231 <---> Min ROI: $-24231
+    
+    
+    Zipcode:  83704
+    --------
+    High-risk - negative ROI possible
+    Max ROI: $15785 <---> Min ROI: $-15785
+    
+    
+    Zipcode:  83706
+    --------
+    Low-risk
+    Max ROI: $20754 <---> Min ROI: $620
+    
+    
+    Zipcode:  83705
+    --------
+    High-risk - negative ROI possible
+    Max ROI: $149642 <---> Min ROI: $-68901
+    
+    
+    Zipcode:  83702
+    --------
+    High-risk - negative ROI possible
+    Max ROI: $433121 <---> Min ROI: $-193121
+    
+    
+    Zipcode:  83616
+    --------
+    High-risk - negative ROI possible
+    Max ROI: $48813 <---> Min ROI: $-48813
+    
+    
+    Zipcode:  83713
+    --------
+    Low-risk
+    Max ROI: $44804 <---> Min ROI: $17167
+    
+    
+    Zipcode:  83714
+    --------
+    Low-risk
+    Max ROI: $52359 <---> Min ROI: $26198
+    
+    
+    Zipcode:  83703
+    --------
+    High-risk - negative ROI possible
+    Max ROI: $243563 <---> Min ROI: $-70763
+    
+    
+    Zipcode:  83716
+    --------
+    High-risk - negative ROI possible
+    Max ROI: $18106 <---> Min ROI: $-18106
+    
+    
+    Zipcode:  83712
+    --------
+    High-risk - negative ROI possible
+    Max ROI: $32840 <---> Min ROI: $-32840
+    
+    
+
+
+
+```python
+def color_negative_red(val):
+    """
+    Takes a scalar and returns a string with
+    the css property `'color: red'` for negative
+    strings, black otherwise.
+    """
+    color = 'red' if val < 0 else 'black'
+    return 'color: %s' % color
+
+ROI_df2 = ROI_df.style.applymap(color_negative_red).\
+            background_gradient(subset=['Mean ROI'], cmap='Greens').\
+            format("$ {}", subset=['Mean ROI', 'Investment price', 'High ROI',
+                                  'Low ROI'])
+
+ROI_df2
+
+
+```
+
+
+
+
+<style  type="text/css" >
+    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row0_col0 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row0_col1 {
+            color:  black;
+            background-color:  #00441b;
+            color:  #f1f1f1;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row0_col2 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row0_col3 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row0_col4 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row0_col5 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row0_col6 {
+            color:  red;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row1_col0 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row1_col1 {
+            color:  black;
+            background-color:  #e8f6e4;
+            color:  #000000;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row1_col2 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row1_col3 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row1_col4 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row1_col5 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row1_col6 {
+            color:  red;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row2_col0 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row2_col1 {
+            color:  black;
+            background-color:  #9cd797;
+            color:  #000000;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row2_col2 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row2_col3 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row2_col4 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row2_col5 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row2_col6 {
+            color:  red;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row3_col0 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row3_col1 {
+            color:  black;
+            background-color:  #319a50;
+            color:  #000000;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row3_col2 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row3_col3 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row3_col4 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row3_col5 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row3_col6 {
+            color:  red;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row4_col0 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row4_col1 {
+            color:  black;
+            background-color:  #e6f5e1;
+            color:  #000000;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row4_col2 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row4_col3 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row4_col4 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row4_col5 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row4_col6 {
+            color:  red;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row5_col0 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row5_col1 {
+            color:  black;
+            background-color:  #3fa95c;
+            color:  #000000;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row5_col2 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row5_col3 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row5_col4 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row5_col5 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row5_col6 {
+            color:  red;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row6_col0 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row6_col1 {
+            color:  black;
+            background-color:  #f7fcf5;
+            color:  #000000;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row6_col2 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row6_col3 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row6_col4 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row6_col5 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row6_col6 {
+            color:  red;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row7_col0 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row7_col1 {
+            color:  black;
+            background-color:  #c4e8bd;
+            color:  #000000;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row7_col2 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row7_col3 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row7_col4 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row7_col5 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row7_col6 {
+            color:  red;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row8_col0 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row8_col1 {
+            color:  black;
+            background-color:  #d8f0d2;
+            color:  #000000;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row8_col2 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row8_col3 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row8_col4 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row8_col5 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row8_col6 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row9_col0 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row9_col1 {
+            color:  black;
+            background-color:  #d4eece;
+            color:  #000000;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row9_col2 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row9_col3 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row9_col4 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row9_col5 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row9_col6 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row10_col0 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row10_col1 {
+            color:  black;
+            background-color:  #bde5b6;
+            color:  #000000;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row10_col2 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row10_col3 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row10_col4 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row10_col5 {
+            color:  black;
+        }    #T_56cb9642_45f5_11eb_bffc_3e22fb470a99row10_col6 {
+            color:  black;
+        }</style><table id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >Investment price</th>        <th class="col_heading level0 col1" >Mean ROI</th>        <th class="col_heading level0 col2" >High ROI</th>        <th class="col_heading level0 col3" >Low ROI</th>        <th class="col_heading level0 col4" >% ROI</th>        <th class="col_heading level0 col5" >% High</th>        <th class="col_heading level0 col6" >% Low</th>    </tr>    <tr>        <th class="index_name level0" >Zipcode</th>        <th class="blank" ></th>        <th class="blank" ></th>        <th class="blank" ></th>        <th class="blank" ></th>        <th class="blank" ></th>        <th class="blank" ></th>        <th class="blank" ></th>    </tr></thead><tbody>
+                <tr>
+                        <th id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99level0_row0" class="row_heading level0 row0" >83702</th>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row0_col0" class="data row0 col0" >$ 441000</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row0_col1" class="data row0 col1" >$ 561000</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row0_col2" class="data row0 col2" >$ 874121</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row0_col3" class="data row0 col3" >$ 247879</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row0_col4" class="data row0 col4" >27.21</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row0_col5" class="data row0 col5" >98.21</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row0_col6" class="data row0 col6" >-43.79</td>
+            </tr>
+            <tr>
+                        <th id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99level0_row1" class="row_heading level0 row1" >83705</th>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row1_col0" class="data row1 col0" >$ 211800</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row1_col1" class="data row1 col1" >$ 252170</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row1_col2" class="data row1 col2" >$ 361442</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row1_col3" class="data row1 col3" >$ 142899</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row1_col4" class="data row1 col4" >19.06</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row1_col5" class="data row1 col5" >70.65</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row1_col6" class="data row1 col6" >-32.53</td>
+            </tr>
+            <tr>
+                        <th id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99level0_row2" class="row_heading level0 row2" >83703</th>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row2_col0" class="data row2 col0" >$ 264200</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row2_col1" class="data row2 col1" >$ 350600</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row2_col2" class="data row2 col2" >$ 507763</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row2_col3" class="data row2 col3" >$ 193437</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row2_col4" class="data row2 col4" >32.7</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row2_col5" class="data row2 col5" >92.19</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row2_col6" class="data row2 col6" >-26.78</td>
+            </tr>
+            <tr>
+                        <th id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99level0_row3" class="row_heading level0 row3" >83616</th>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row3_col0" class="data row3 col0" >$ 453200</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row3_col1" class="data row3 col1" >$ 453200</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row3_col2" class="data row3 col2" >$ 502013</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row3_col3" class="data row3 col3" >$ 404387</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row3_col4" class="data row3 col4" >0</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row3_col5" class="data row3 col5" >10.77</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row3_col6" class="data row3 col6" >-10.77</td>
+            </tr>
+            <tr>
+                        <th id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99level0_row4" class="row_heading level0 row4" >83709</th>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row4_col0" class="data row4 col0" >$ 256600</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row4_col1" class="data row4 col1" >$ 256600</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row4_col2" class="data row4 col2" >$ 280831</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row4_col3" class="data row4 col3" >$ 232369</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row4_col4" class="data row4 col4" >0</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row4_col5" class="data row4 col5" >9.44</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row4_col6" class="data row4 col6" >-9.44</td>
+            </tr>
+            <tr>
+                        <th id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99level0_row5" class="row_heading level0 row5" >83712</th>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row5_col0" class="data row5 col0" >$ 433500</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row5_col1" class="data row5 col1" >$ 433500</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row5_col2" class="data row5 col2" >$ 466340</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row5_col3" class="data row5 col3" >$ 400660</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row5_col4" class="data row5 col4" >0</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row5_col5" class="data row5 col5" >7.58</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row5_col6" class="data row5 col6" >-7.58</td>
+            </tr>
+            <tr>
+                        <th id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99level0_row6" class="row_heading level0 row6" >83704</th>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row6_col0" class="data row6 col0" >$ 215900</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row6_col1" class="data row6 col1" >$ 215900</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row6_col2" class="data row6 col2" >$ 231685</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row6_col3" class="data row6 col3" >$ 200115</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row6_col4" class="data row6 col4" >0</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row6_col5" class="data row6 col5" >7.31</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row6_col6" class="data row6 col6" >-7.31</td>
+            </tr>
+            <tr>
+                        <th id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99level0_row7" class="row_heading level0 row7" >83716</th>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row7_col0" class="data row7 col0" >$ 305600</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row7_col1" class="data row7 col1" >$ 305600</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row7_col2" class="data row7 col2" >$ 323706</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row7_col3" class="data row7 col3" >$ 287494</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row7_col4" class="data row7 col4" >0</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row7_col5" class="data row7 col5" >5.92</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row7_col6" class="data row7 col6" >-5.92</td>
+            </tr>
+            <tr>
+                        <th id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99level0_row8" class="row_heading level0 row8" >83706</th>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row8_col0" class="data row8 col0" >$ 267500</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row8_col1" class="data row8 col1" >$ 278187</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row8_col2" class="data row8 col2" >$ 288254</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row8_col3" class="data row8 col3" >$ 268120</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row8_col4" class="data row8 col4" >4</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row8_col5" class="data row8 col5" >7.76</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row8_col6" class="data row8 col6" >0.23</td>
+            </tr>
+            <tr>
+                        <th id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99level0_row9" class="row_heading level0 row9" >83713</th>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row9_col0" class="data row9 col0" >$ 252800</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row9_col1" class="data row9 col1" >$ 283785</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row9_col2" class="data row9 col2" >$ 297604</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row9_col3" class="data row9 col3" >$ 269967</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row9_col4" class="data row9 col4" >12.26</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row9_col5" class="data row9 col5" >17.72</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row9_col6" class="data row9 col6" >6.79</td>
+            </tr>
+            <tr>
+                        <th id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99level0_row10" class="row_heading level0 row10" >83714</th>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row10_col0" class="data row10 col0" >$ 274900</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row10_col1" class="data row10 col1" >$ 314179</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row10_col2" class="data row10 col2" >$ 327259</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row10_col3" class="data row10 col3" >$ 301098</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row10_col4" class="data row10 col4" >14.29</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row10_col5" class="data row10 col5" >19.05</td>
+                        <td id="T_56cb9642_45f5_11eb_bffc_3e22fb470a99row10_col6" class="data row10 col6" >9.53</td>
+            </tr>
+    </tbody></table>
 
 
 
 # CONCLUSIONS AND RECOMMENDATIONS
 
-> **Our AIC scores are all relatively close, but it clear from the plots that some of our models are fitting poorly, and thus are not going to make very accurate forecasts into the future.**
 
-> **The top five lowest risk zipcodes to invest in based off a 5-year forecasts are:**
-
-> 1. 83706
-> 2. 83709
-> 3. 83713
-> 4. 83704
-> 5. 83616
-
-> **This means that you are least likely to lose your money and most likely to increase your ROI by investing in these zipcodes.**
+```python
+ROI_df2
+```
 
 
+
+
+<style  type="text/css" >
+    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row0_col0 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row0_col1 {
+            color:  black;
+            background-color:  #00441b;
+            color:  #f1f1f1;
+            color:  black;
+            background-color:  #00441b;
+            color:  #f1f1f1;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row0_col2 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row0_col3 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row0_col4 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row0_col5 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row0_col6 {
+            color:  red;
+            color:  red;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row1_col0 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row1_col1 {
+            color:  black;
+            background-color:  #e8f6e4;
+            color:  #000000;
+            color:  black;
+            background-color:  #e8f6e4;
+            color:  #000000;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row1_col2 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row1_col3 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row1_col4 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row1_col5 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row1_col6 {
+            color:  red;
+            color:  red;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row2_col0 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row2_col1 {
+            color:  black;
+            background-color:  #9cd797;
+            color:  #000000;
+            color:  black;
+            background-color:  #9cd797;
+            color:  #000000;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row2_col2 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row2_col3 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row2_col4 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row2_col5 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row2_col6 {
+            color:  red;
+            color:  red;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row3_col0 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row3_col1 {
+            color:  black;
+            background-color:  #319a50;
+            color:  #000000;
+            color:  black;
+            background-color:  #319a50;
+            color:  #000000;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row3_col2 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row3_col3 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row3_col4 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row3_col5 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row3_col6 {
+            color:  red;
+            color:  red;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row4_col0 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row4_col1 {
+            color:  black;
+            background-color:  #e6f5e1;
+            color:  #000000;
+            color:  black;
+            background-color:  #e6f5e1;
+            color:  #000000;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row4_col2 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row4_col3 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row4_col4 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row4_col5 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row4_col6 {
+            color:  red;
+            color:  red;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row5_col0 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row5_col1 {
+            color:  black;
+            background-color:  #3fa95c;
+            color:  #000000;
+            color:  black;
+            background-color:  #3fa95c;
+            color:  #000000;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row5_col2 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row5_col3 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row5_col4 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row5_col5 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row5_col6 {
+            color:  red;
+            color:  red;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row6_col0 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row6_col1 {
+            color:  black;
+            background-color:  #f7fcf5;
+            color:  #000000;
+            color:  black;
+            background-color:  #f7fcf5;
+            color:  #000000;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row6_col2 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row6_col3 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row6_col4 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row6_col5 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row6_col6 {
+            color:  red;
+            color:  red;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row7_col0 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row7_col1 {
+            color:  black;
+            background-color:  #c4e8bd;
+            color:  #000000;
+            color:  black;
+            background-color:  #c4e8bd;
+            color:  #000000;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row7_col2 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row7_col3 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row7_col4 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row7_col5 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row7_col6 {
+            color:  red;
+            color:  red;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row8_col0 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row8_col1 {
+            color:  black;
+            background-color:  #d8f0d2;
+            color:  #000000;
+            color:  black;
+            background-color:  #d8f0d2;
+            color:  #000000;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row8_col2 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row8_col3 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row8_col4 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row8_col5 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row8_col6 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row9_col0 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row9_col1 {
+            color:  black;
+            background-color:  #d4eece;
+            color:  #000000;
+            color:  black;
+            background-color:  #d4eece;
+            color:  #000000;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row9_col2 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row9_col3 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row9_col4 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row9_col5 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row9_col6 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row10_col0 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row10_col1 {
+            color:  black;
+            background-color:  #bde5b6;
+            color:  #000000;
+            color:  black;
+            background-color:  #bde5b6;
+            color:  #000000;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row10_col2 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row10_col3 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row10_col4 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row10_col5 {
+            color:  black;
+            color:  black;
+        }    #T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row10_col6 {
+            color:  black;
+            color:  black;
+        }</style><table id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >Investment price</th>        <th class="col_heading level0 col1" >Mean ROI</th>        <th class="col_heading level0 col2" >High ROI</th>        <th class="col_heading level0 col3" >Low ROI</th>        <th class="col_heading level0 col4" >% ROI</th>        <th class="col_heading level0 col5" >% High</th>        <th class="col_heading level0 col6" >% Low</th>    </tr>    <tr>        <th class="index_name level0" >Zipcode</th>        <th class="blank" ></th>        <th class="blank" ></th>        <th class="blank" ></th>        <th class="blank" ></th>        <th class="blank" ></th>        <th class="blank" ></th>        <th class="blank" ></th>    </tr></thead><tbody>
+                <tr>
+                        <th id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99level0_row0" class="row_heading level0 row0" >83702</th>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row0_col0" class="data row0 col0" >$ 441000</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row0_col1" class="data row0 col1" >$ 561000</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row0_col2" class="data row0 col2" >$ 874121</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row0_col3" class="data row0 col3" >$ 247879</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row0_col4" class="data row0 col4" >27.21</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row0_col5" class="data row0 col5" >98.21</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row0_col6" class="data row0 col6" >-43.79</td>
+            </tr>
+            <tr>
+                        <th id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99level0_row1" class="row_heading level0 row1" >83705</th>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row1_col0" class="data row1 col0" >$ 211800</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row1_col1" class="data row1 col1" >$ 252170</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row1_col2" class="data row1 col2" >$ 361442</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row1_col3" class="data row1 col3" >$ 142899</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row1_col4" class="data row1 col4" >19.06</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row1_col5" class="data row1 col5" >70.65</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row1_col6" class="data row1 col6" >-32.53</td>
+            </tr>
+            <tr>
+                        <th id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99level0_row2" class="row_heading level0 row2" >83703</th>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row2_col0" class="data row2 col0" >$ 264200</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row2_col1" class="data row2 col1" >$ 350600</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row2_col2" class="data row2 col2" >$ 507763</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row2_col3" class="data row2 col3" >$ 193437</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row2_col4" class="data row2 col4" >32.7</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row2_col5" class="data row2 col5" >92.19</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row2_col6" class="data row2 col6" >-26.78</td>
+            </tr>
+            <tr>
+                        <th id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99level0_row3" class="row_heading level0 row3" >83616</th>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row3_col0" class="data row3 col0" >$ 453200</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row3_col1" class="data row3 col1" >$ 453200</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row3_col2" class="data row3 col2" >$ 502013</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row3_col3" class="data row3 col3" >$ 404387</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row3_col4" class="data row3 col4" >0</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row3_col5" class="data row3 col5" >10.77</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row3_col6" class="data row3 col6" >-10.77</td>
+            </tr>
+            <tr>
+                        <th id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99level0_row4" class="row_heading level0 row4" >83709</th>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row4_col0" class="data row4 col0" >$ 256600</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row4_col1" class="data row4 col1" >$ 256600</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row4_col2" class="data row4 col2" >$ 280831</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row4_col3" class="data row4 col3" >$ 232369</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row4_col4" class="data row4 col4" >0</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row4_col5" class="data row4 col5" >9.44</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row4_col6" class="data row4 col6" >-9.44</td>
+            </tr>
+            <tr>
+                        <th id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99level0_row5" class="row_heading level0 row5" >83712</th>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row5_col0" class="data row5 col0" >$ 433500</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row5_col1" class="data row5 col1" >$ 433500</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row5_col2" class="data row5 col2" >$ 466340</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row5_col3" class="data row5 col3" >$ 400660</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row5_col4" class="data row5 col4" >0</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row5_col5" class="data row5 col5" >7.58</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row5_col6" class="data row5 col6" >-7.58</td>
+            </tr>
+            <tr>
+                        <th id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99level0_row6" class="row_heading level0 row6" >83704</th>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row6_col0" class="data row6 col0" >$ 215900</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row6_col1" class="data row6 col1" >$ 215900</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row6_col2" class="data row6 col2" >$ 231685</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row6_col3" class="data row6 col3" >$ 200115</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row6_col4" class="data row6 col4" >0</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row6_col5" class="data row6 col5" >7.31</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row6_col6" class="data row6 col6" >-7.31</td>
+            </tr>
+            <tr>
+                        <th id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99level0_row7" class="row_heading level0 row7" >83716</th>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row7_col0" class="data row7 col0" >$ 305600</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row7_col1" class="data row7 col1" >$ 305600</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row7_col2" class="data row7 col2" >$ 323706</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row7_col3" class="data row7 col3" >$ 287494</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row7_col4" class="data row7 col4" >0</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row7_col5" class="data row7 col5" >5.92</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row7_col6" class="data row7 col6" >-5.92</td>
+            </tr>
+            <tr>
+                        <th id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99level0_row8" class="row_heading level0 row8" >83706</th>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row8_col0" class="data row8 col0" >$ 267500</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row8_col1" class="data row8 col1" >$ 278187</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row8_col2" class="data row8 col2" >$ 288254</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row8_col3" class="data row8 col3" >$ 268120</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row8_col4" class="data row8 col4" >4</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row8_col5" class="data row8 col5" >7.76</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row8_col6" class="data row8 col6" >0.23</td>
+            </tr>
+            <tr>
+                        <th id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99level0_row9" class="row_heading level0 row9" >83713</th>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row9_col0" class="data row9 col0" >$ 252800</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row9_col1" class="data row9 col1" >$ 283785</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row9_col2" class="data row9 col2" >$ 297604</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row9_col3" class="data row9 col3" >$ 269967</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row9_col4" class="data row9 col4" >12.26</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row9_col5" class="data row9 col5" >17.72</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row9_col6" class="data row9 col6" >6.79</td>
+            </tr>
+            <tr>
+                        <th id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99level0_row10" class="row_heading level0 row10" >83714</th>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row10_col0" class="data row10 col0" >$ 274900</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row10_col1" class="data row10 col1" >$ 314179</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row10_col2" class="data row10 col2" >$ 327259</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row10_col3" class="data row10 col3" >$ 301098</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row10_col4" class="data row10 col4" >14.29</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row10_col5" class="data row10 col5" >19.05</td>
+                        <td id="T_58aa7ef6_45f5_11eb_b6e4_3e22fb470a99row10_col6" class="data row10 col6" >9.53</td>
+            </tr>
+    </tbody></table>
+
+
+
+> **Looking at the dataframe above, there are only three zip codes (83706, 83713, 83714) that have a low probability of a negative ROI on a two year time horizon.**
+
+> **83704 and 83716 round out our 5 least risky investments, although they do have show a potential negative ROI.**
 
 ## FUTURE WORK
 
@@ -4210,4 +5025,4 @@ for zipcode in zipcode_list:
 
 > - **Get more recent data (the current data set only includes dates up to April 2018) to be able to forecast more accurately into the future.**
 
-> - **Research other data preprocessing techniques to see if we can improve model performance and forecasts.**
+> - **Research Zillow "Zestimate" calculation for home sale price forecasting.**
